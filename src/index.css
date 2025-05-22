@@ -1,0 +1,22 @@
+/* Reset básico para normalizar estilos */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Garantir que html e body ocupem toda a altura da tela */
+html, body {
+  height: 100%;
+  width: 100%;
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+}
+
+/* Garantir que o contêiner principal ocupe toda a tela */
+#root {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}

@@ -1,0 +1,108 @@
+/* Estilos padrão (mobile-first) */
+
+h2{
+    color: black;
+}
+.login{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        #login-form{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            input{
+                border: 1px solid #D9D9D9;
+            }
+
+            .button-login{
+                background-color: black;
+                color: white;
+            }
+        }
+
+        
+    }
+
+/* Breakpoint para telas pequenas (tablets em modo retrato) */
+@media (min-width: 576px) {
+    .login{
+        margin-top: 100px;
+
+        #login-form{
+            gap: 20px;
+            margin-top: 10px;
+
+            input{
+                width: 100%;
+                height: 40px;
+                border-radius: 5px;
+                padding-left: 10px;
+            }
+
+            .button-login{
+                margin: 0;
+                border-radius: 5px;
+                width: 55%;
+                height: 40px;
+
+                img{
+                    padding-left: 10px;
+                }
+            }
+        }
+    }
+    
+    
+}
+
+/* Breakpoint para telas médias (tablets em modo paisagem) */
+@media (min-width: 768px) {
+    .login{
+        margin-top: 120px;
+
+        #login-form{
+            margin-top: 20px;
+        }
+    }
+}
+
+/* Breakpoint para telas grandes (desktops pequenos) */
+@media (min-width: 992px) {
+    .login{
+        margin-top: 140px;
+
+        #login-form{
+            gap: 30px;
+            margin-top: 30px;
+
+            input{
+                width: 300px;
+                height: 60px;
+                border-radius: 5px;
+                padding-left: 10px;
+
+                font-size: large;
+            }
+
+            .button-login{
+                margin: 0;
+                border-radius: 5px;
+                width: 70%;
+                height: 40px;
+                font-size: large;
+
+                img{
+                    padding-left: 10px;
+                }
+            }
+        }
+    }
+}
+
+/* Breakpoint para telas extra grandes (desktops grandes) */
+@media (min-width: 1200px) {
+  
+}

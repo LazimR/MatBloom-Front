@@ -1,0 +1,61 @@
+.header{
+    display: flex;
+    flex-direction: row;
+    background-color: #003B46;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    
+
+    .header-title{
+        color: #FFFFFF;
+        text-align: end;
+        font-weight: bold;
+    }
+}
+
+/* Estilos padrão (mobile-first) */
+
+
+/* Breakpoint para telas pequenas (tablets em modo retrato) */
+@media (min-width: 576px) {
+  .header-logo{
+        width: 65px;
+        height: 65px;
+        margin: 0 10px;
+    }
+
+    .header-title{
+        font-size: 18px;
+        margin: 0 10px;
+    }
+}
+
+/* Breakpoint para telas médias (tablets em modo paisagem) */
+@media (min-width: 768px) {
+    .header-logo{
+        width: 70px;
+        height: 70px;
+    }
+
+    .header-title{
+        font-size: 20px;
+    }
+}
+
+/* Breakpoint para telas grandes (desktops pequenos) */
+@media (min-width: 992px) {
+    .header-logo{
+        width: 80px;
+        height: 80px;
+    }
+
+    .header-title{
+        font-size: 24px;
+    }
+}
+
+/* Breakpoint para telas extra grandes (desktops grandes) */
+@media (min-width: 1200px) {
+  
+}
