@@ -1,0 +1,26 @@
+/* Estilos padrão (mobile-first) */
+
+/* Breakpoint para telas pequenas (smartphones) */
+@media (max-width: 575.98px) {
+    
+}
+
+/* Breakpoint para telas pequenas (tablets em modo retrato) */
+@media (min-width: 576px) {
+       
+}
+
+/* Breakpoint para telas médias (tablets em modo paisagem) */
+@media (min-width: 768px) {
+
+}
+
+/* Breakpoint para telas grandes (desktops pequenos) */
+@media (min-width: 992px) {
+    
+}
+
+/* Breakpoint para telas extra grandes (desktops grandes) */
+@media (min-width: 1200px) {
+  
+}

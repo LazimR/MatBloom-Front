@@ -1,0 +1,60 @@
+/* Estilos padrão (mobile-first) */
+.card {
+    .card-button{
+        background-color: transparent;
+        border: none;
+        color: black;
+    }
+    .card-button:hover {
+        transition: background-color 0.3s ease;
+        background-color: #003B46;
+        h2{
+            color: white;
+        }
+    }
+    .card-button:active{
+        transition: background-color 0.3s ease;
+        background-color: #003B46;
+        h2{
+            color: white;
+        }
+        
+    }
+}
+/* Breakpoint para telas pequenas (smartphones) */
+@media (max-width: 575.98px) {
+    .card{
+        border: 1px solid #D9D9D9;
+        border-radius: 8px;
+        gap: 15px;
+        display: flex;
+        flex-direction: column;
+
+        .card-button{
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        
+    }
+}
+
+/* Breakpoint para telas pequenas (tablets em modo retrato) */
+@media (min-width: 576px) {
+       
+}
+
+/* Breakpoint para telas médias (tablets em modo paisagem) */
+@media (min-width: 768px) {
+
+}
+
+/* Breakpoint para telas grandes (desktops pequenos) */
+@media (min-width: 992px) {
+    
+}
+
+/* Breakpoint para telas extra grandes (desktops grandes) */
+@media (min-width: 1200px) {
+  
+}
