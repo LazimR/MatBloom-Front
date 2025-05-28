@@ -1,3 +1,17 @@
 body{
     background-color: #ffffff;
 }
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 8px;
+    background-color: #ffffff;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #01515f;
+}
+
+:hover::-webkit-scrollbar-thumb {
+    background-color: #003B46;
+}

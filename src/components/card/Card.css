@@ -1,5 +1,9 @@
 /* Estilos padrão (mobile-first) */
 .card {
+    display: flex;
+    flex-direction: column;
+    height: max-content;
+    
     .card-button{
         background-color: transparent;
         border: none;
@@ -27,9 +31,7 @@
         border: 1px solid #D9D9D9;
         border-radius: 8px;
         gap: 15px;
-        display: flex;
-        flex-direction: column;
-
+        
         .card-button{
             padding: 15px;
             border-radius: 8px;
@@ -41,7 +43,18 @@
 
 /* Breakpoint para telas pequenas (tablets em modo retrato) */
 @media (min-width: 576px) {
-       
+       .card{
+        border: 1px solid #D9D9D9;
+        border-radius: 8px;
+        gap: 15px;
+
+        .card-button{
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        
+    }
 }
 
 /* Breakpoint para telas médias (tablets em modo paisagem) */

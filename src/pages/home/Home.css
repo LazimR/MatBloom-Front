@@ -2,7 +2,7 @@
     color: black;
     display: flex;
     flex-direction: row;
-
+    
     .button-dropdown-button{
         background-color: transparent;
         border: none;
@@ -10,6 +10,7 @@
     }
 
     .menu{
+
         .button-dropdown-button-menu{
             background-color: transparent;
             border: none;       
@@ -30,6 +31,7 @@
     }
 
     .menu.menu-open {
+        max-width: 30%;
         transform: translateX(0);
         opacity: 1;
     }
@@ -51,8 +53,28 @@
                 display: flex;
                 flex-direction: row;
                 justify-content: space-between;
-                overflow: scroll;
+                overflow-x: auto;
+                scrollbar-width: none;
+            }
 
+            .cards-carrousel::-webkit-scrollbar{
+                display: none;
+            }
+
+            .cards-carrousel:hover{
+                scrollbar-width: auto;
+            }
+
+            .cards-carrousel:hover::-webkit-scrollbar {
+                display: block;
+                height: 8px;
+            }
+            .cards-carrousel:hover::-webkit-scrollbar-track {
+                background: #f1f1f1;
+            }
+            .cards-carrousel:hover::-webkit-scrollbar-thumb {
+                background: #003B46;
+                border-radius: 4px;
             }
         }
     }
@@ -64,7 +86,8 @@
         
 
         .button-dropdown-button{
-            transform: translate(-30px, -350px);
+            max-height: 30px;
+            margin: 10px 10px 0 -30px;
             img{
                 width: 30px;
                 height: 30px;
@@ -82,10 +105,7 @@
             transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.6s;
 
             width: 0%;
-            border: solid 1px #D9D9D9;
-            border-bottom-color: transparent;
-            border-top-color: transparent;
-            border-left-color: transparent;
+            border-right: solid 1px #D9D9D9;
             padding: 10px 10px 0px 0px;
             margin-left: 20px;
             margin-right: 10px;
@@ -128,7 +148,9 @@
         }
 
         .content{
-            width: 70%;
+            margin-top:5vw;
+            margin-left: 20px;
+            width: 80%;
 
             p{
             font-weight: bold;
@@ -151,20 +173,159 @@
 }
 
 @media (min-width: 576px) {
-    
+    .home{
+        gap: 20px;
+
+        .button-dropdown-button{
+            max-height: 30px;
+            margin: 10px 10px 0 -40px;
+            img{
+                width: 30px;
+                height: 30px;
+            }
+        }
+
+        .button-dropdown-button.button-dropdown-button-open{
+            transform: translateY(-1000px);
+            opacity: 1;
+        }
+
+        .menu{
+            transform: translateX(-30px);
+            opacity: 0;
+            transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.6s;
+
+            width: 0%;
+            border-right: solid 1px #D9D9D9;
+            padding: 10px 10px 0px 0px;
+            margin-left: 20px;
+            margin-right: 10px;
+            height: 100vh;
+
+            .button-dropdown-button-menu{
+            
+                background-color: transparent;
+                border: none;       
+                color: black;   
+                margin-bottom: 20px;
+                img{
+                    width: 30px;
+                    height: 30px;
+                }
+
+                
+            }
+            p{
+                color: #757575;
+            }
+            #username{
+                font-weight: bold;
+                color: black;
+                margin-bottom: 10px;
+            }
+
+            li{
+                margin: 30px 0;
+            }
+            
+            hr{
+                border-color: #D9D9D9;
+                width: 100%;
+            }
+        }
+
+        .menu.menu-open {
+            width: 100%;
+        }
+
+        .content{
+            margin-top:5vw;
+            width: 80%;
+
+            p{
+            font-weight: bold;
+            font-size: 2rem;
+            }
+            
+            .cards{
+                .cards-carrousel{
+                    gap: 20px;
+                    padding: 10px;
+                }
+
+            }
+        }
+
+        .content.menu-is-open{
+            width: 54%;
+        }
+    }
 }
 
 /* Breakpoint para telas médias (tablets em modo paisagem) */
 @media (min-width: 768px) {
-    
+    .home{
+
+        .menu.menu-open {
+            width: 22%;
+        }
+
+        .content{
+            transition: width 0.3s ease;
+            width: 85%;
+            
+        }
+
+        .content.menu-is-open{
+            transition: width 0.1s ease-out ;
+            width: 65%;
+        }
+    }
 }
 
 /* Breakpoint para telas grandes (desktops pequenos) */
 @media (min-width: 992px) {
-    
+    .home{
+
+        .menu.menu-open {
+            width: 22%;
+        }
+
+        .content{
+            transition: width 0.5s ease;
+            width: 90%;
+        }
+
+        .content.menu-is-open{
+            transition: width 1s linear(0 0%, 0 2.27%, 0.02 4.53%, 0.04 6.8%, 0.06 9.07%, 0.1 11.33%, 0.14 13.6%, 0.25 18.15%, 0.39 22.7%, 0.56 27.25%, 0.77 31.8%, 1 36.35%, 0.89 40.9%, 0.85 43.18%, 0.81 45.45%, 0.79 47.72%, 0.77 50%, 0.75 52.27%, 0.75 54.55%, 0.75 56.82%, 0.77 59.1%, 0.79 61.38%, 0.81 63.65%, 0.85 65.93%, 0.89 68.2%, 1 72.7%, 0.97 74.98%, 0.95 77.25%, 0.94 79.53%, 0.94 81.8%, 0.94 84.08%, 0.95 86.35%, 0.97 88.63%, 1 90.9%, 0.99 93.18%, 0.98 95.45%, 0.99 97.73%, 1 100%);
+            width: 69%;
+        }
+    }    
 }
 
 /* Breakpoint para telas extra grandes (desktops grandes) */
 @media (min-width: 1200px) {
-  
+  .home{
+        .button-dropdown-button{
+            max-height: 30px;
+            margin: 10px 10px 0 -40px;
+            img{
+                width: 40px;
+                height: 40px;
+            }
+        }
+        .menu.menu-open {
+            width: 22%;
+        }
+
+        .content{
+            transition: width 0.5s ease;
+            width: 90%;
+        }
+
+        .content.menu-is-open{
+            transition: width 1s linear(0 0%, 0 2.27%, 0.02 4.53%, 0.04 6.8%, 0.06 9.07%, 0.1 11.33%, 0.14 13.6%, 0.25 18.15%, 0.39 22.7%, 0.56 27.25%, 0.77 31.8%, 1 36.35%, 0.89 40.9%, 0.85 43.18%, 0.81 45.45%, 0.79 47.72%, 0.77 50%, 0.75 52.27%, 0.75 54.55%, 0.75 56.82%, 0.77 59.1%, 0.79 61.38%, 0.81 63.65%, 0.85 65.93%, 0.89 68.2%, 1 72.7%, 0.97 74.98%, 0.95 77.25%, 0.94 79.53%, 0.94 81.8%, 0.94 84.08%, 0.95 86.35%, 0.97 88.63%, 1 90.9%, 0.99 93.18%, 0.98 95.45%, 0.99 97.73%, 1 100%);
+            width: 69%;
+        }
+    }    
 }

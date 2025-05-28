@@ -52,6 +52,7 @@ const Home = () => {
                         <Card title='Turma 2' />
                         <Card title='Turma 3' />
                         <Card title='Turma 4' />
+                        <Card title='Turma 5' />
                         <Card title='Adicionar Turma' imagem={Images.card_add}/>
                     </div>
                 </div>
