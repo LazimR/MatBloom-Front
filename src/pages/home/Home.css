@@ -3,35 +3,37 @@
     display: flex;
     flex-direction: row;
     
-    .button-dropdown-button{
+    .button-dropdown{
         background-color: transparent;
         border: none;
         color: black;
     }
 
     .menu{
-
-        .button-dropdown-button-menu{
+        .button-dropdown-menu{
             background-color: transparent;
             border: none;       
             color: black;   
         }
 
-        li{
-            list-style: none;;
-        }
-        a{
-            text-decoration: none;
-            color: black;
+        ul{
+            border-color: #D9D9D9;
+            width: 100%;
+            li{
+                list-style: none;
+                a{
+                    text-decoration: none;
+                    color: black;
 
-            &:hover{
-                color: #003B46;
+                    &:hover{
+                        color: #003B46;
+                    }
+                }
             }
         }
     }
 
     .menu.menu-open {
-        max-width: 30%;
         transform: translateX(0);
         opacity: 1;
     }
@@ -55,26 +57,25 @@
                 justify-content: space-between;
                 overflow-x: auto;
                 scrollbar-width: none;
-            }
 
-            .cards-carrousel::-webkit-scrollbar{
-                display: none;
-            }
+                
 
-            .cards-carrousel:hover{
-                scrollbar-width: auto;
-            }
+                &:hover{
+                    scrollbar-width: auto;
 
-            .cards-carrousel:hover::-webkit-scrollbar {
-                display: block;
-                height: 8px;
-            }
-            .cards-carrousel:hover::-webkit-scrollbar-track {
-                background: #f1f1f1;
-            }
-            .cards-carrousel:hover::-webkit-scrollbar-thumb {
-                background: #003B46;
-                border-radius: 4px;
+                    &::-webkit-scrollbar {
+                        display: block;
+                        height: 8px;
+                    }
+                }
+
+                &::-webkit-scrollbar{
+                    display: none;
+                }
+
+                &::-webkit-scrollbar-track {
+                    background: #f1f1f1;
+                }
             }
         }
     }
@@ -85,7 +86,7 @@
         font-size: 1rem;
         
 
-        .button-dropdown-button{
+        .button-dropdown{
             max-height: 30px;
             margin: 10px 10px 0 -30px;
             img{
@@ -94,7 +95,7 @@
             }
         }
 
-        .button-dropdown-button.button-dropdown-button-open{
+        .button-dropdown.button-dropdown-open{
             transform: translateY(-1000px);
             opacity: 1;
         }
@@ -111,7 +112,7 @@
             margin-right: 10px;
             height: 100vh;
 
-            .button-dropdown-button-menu{
+            .button-dropdown-menu{
             
                 background-color: transparent;
                 border: none;       
@@ -135,6 +136,7 @@
 
             li{
                 margin: 30px 0;
+                width: max-content;
             }
             
             hr{
@@ -144,13 +146,13 @@
         }
 
         .menu.menu-open {
-            width: 100%;
+            width: 450px;
         }
 
         .content{
             margin-top:5vw;
             margin-left: 20px;
-            width: 80%;
+            width: 70%;
 
             p{
             font-weight: bold;
@@ -176,7 +178,7 @@
     .home{
         gap: 20px;
 
-        .button-dropdown-button{
+        .button-dropdown{
             max-height: 30px;
             margin: 10px 10px 0 -40px;
             img{
@@ -185,7 +187,7 @@
             }
         }
 
-        .button-dropdown-button.button-dropdown-button-open{
+        .button-dropdown.button-dropdown-open{
             transform: translateY(-1000px);
             opacity: 1;
         }
@@ -202,7 +204,7 @@
             margin-right: 10px;
             height: 100vh;
 
-            .button-dropdown-button-menu{
+            .button-dropdown-menu{
             
                 background-color: transparent;
                 border: none;       
@@ -224,9 +226,14 @@
                 margin-bottom: 10px;
             }
 
-            li{
-                margin: 30px 0;
+            ul{
+            
+                li{
+                    margin: 30px 0;
+                }
             }
+
+            
             
             hr{
                 border-color: #D9D9D9;
@@ -306,7 +313,7 @@
 /* Breakpoint para telas extra grandes (desktops grandes) */
 @media (min-width: 1200px) {
   .home{
-        .button-dropdown-button{
+        .button-dropdown{
             max-height: 30px;
             margin: 10px 10px 0 -40px;
             img{

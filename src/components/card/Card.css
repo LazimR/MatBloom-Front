@@ -35,6 +35,12 @@
         .card-button{
             padding: 15px;
             border-radius: 8px;
+            width: 130px;
+
+            img{
+                width: 100%;
+                height: 100%;
+            }
         }
         
         

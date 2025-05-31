@@ -7,6 +7,7 @@ interface ButtonProps {
     disabled?: boolean;
     className?: string;
     imagem?: string;
+    ariaLabel?: string;
     type?: 'submit' | 'reset' | 'button';
 }
 
@@ -16,16 +17,19 @@ const Button: React.FC<ButtonProps> = ({
     disabled = false,
     className = '',
     imagem = null,
-    type = 'button'
+    type = 'button',
+    ariaLabel = '',
 }) => {
     return (
-        <button
+        <button 
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             className={`button-${className}`}
             onClick={onClick}
             disabled={disabled}
             type={type}
+            aria-label={ariaLabel}
         >
-            {label}
+            {<p>{label}</p>}
             {imagem ? <img src={imagem} alt="" /> : null}
         </button>
     );

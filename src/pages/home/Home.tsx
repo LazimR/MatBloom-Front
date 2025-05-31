@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Routes, Route, Link } from 'react-router-dom';
 
 import './Home.css'
 import { useAppSelector } from '../../hooks/Redux';
@@ -6,7 +7,9 @@ import Button from '../../components/button/Button';
 import Card from '../../components/card/Card';
 import Images from '../../assets/Images';
 
-const Home = () => {
+import ManageStudents from '../manageStudents/ManageStudents';
+
+const HomePage = () => {
     const user = useAppSelector((state) => state.user);
 
     const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -18,7 +21,7 @@ const Home = () => {
             <div className={`menu${dropdownOpen ? ' menu-open' : ''}`}>
                 <Button
                     type='button'
-                    className='dropdown-button-menu'
+                    className='dropdown-menu'
                     onClick={() => setDropdownOpen(!dropdownOpen)}
                     imagem={Images.left_arrow}
                 ></Button>
@@ -28,7 +31,7 @@ const Home = () => {
                 </div>
                 <hr />
                 <ul>
-                    <li><a href="#home">Gerenciar Alunos</a></li>
+                    <li><Link to="gerenciar-alunos">Gerenciar Alunos</Link></li>
                     <li><a href="#about">Gerenciar Questões</a></li>
                     <li><a href="#contact">Configurações</a></li>
                     <hr />
@@ -37,7 +40,7 @@ const Home = () => {
             </div>
             <Button
                 type='button'
-                className={`dropdown-button${dropdownOpen ? ' button-dropdown-button-open' : ''}`}
+                className={`dropdown${dropdownOpen ? ' button-dropdown-open' : ''}`}
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 imagem={Images.menu}
             >
@@ -70,6 +73,16 @@ const Home = () => {
             
         </div>
     );
+}
+
+
+const Home = () => {
+    return(
+        <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="gerenciar-alunos/*" element={<ManageStudents/>} />
+        </Routes>
+    )
 }
 
 export default Home;

@@ -1,0 +1,208 @@
+.manage-students{
+    color: black;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+
+    .button-back{
+        background-color: transparent;
+        border: none;
+        color: black;
+    }
+
+    .search-container{
+        display: flex;
+        align-items: center;
+
+        .input-search-aluno{
+            z-index: 1;
+            background-color: #ffffff;
+            border: none;
+        }
+
+        .button-search-aluno{
+            z-index: 2;
+            background-color: transparent;
+            border: none;
+            color: black;
+        }
+    }
+
+    .button-dropdown{
+        background-color: transparent;
+        border: none;
+        color: black;
+    }
+
+    .menu{
+        z-index: 10;
+        background-color: #ffffff;
+
+        border-left: 1px solid #e0e0e0;
+        border-bottom: 1px solid #e0e0e0;
+
+        border-bottom-left-radius: 8px;
+
+        .button-dropdown-menu{
+            background-color: transparent;
+            border: none;       
+            color: black;   
+        }
+
+        ul{
+            border-color: #D9D9D9;
+            width: 100%;
+            li{
+                list-style: none;
+                a{
+                    text-decoration: none;
+                    color: black;
+
+                    &:hover{
+                        color: #003B46;
+                    }
+                }
+            }
+        }
+    }
+
+    .menu.menu-open {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+}
+
+/* Breakpoint para telas pequenas (smartphones) */
+@media (max-width: 575.98px) {
+    .manage-students{
+
+        .button-back{
+            width: 30px;
+            height: 30px;
+            margin-top: 10px;
+            margin-left: 5px;
+
+            img{
+                width: 30px;
+                height: 30px;
+            }
+        }
+
+        .manage-students-content{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            margin-top: 60px;
+            .search-container{
+                width: 70%;
+                border: solid 1px #e0e0e0;
+                border-radius: 8px;
+
+                .input-search-aluno{
+                    width: 90%;
+                    height: 25px;
+                    margin-left: 0px;
+                    padding-left: 10px;
+                }
+
+                .button-search-aluno{
+                    padding: 5px 10px;
+                }
+
+            }
+        }
+
+        .button-dropdown{
+            position: absolute;
+            right: 0px;
+            max-height: 30px;
+            margin: 10px 10px 0 -30px;
+            img{
+                width: 30px;
+                height: 30px;
+            }
+        }
+
+        .button-dropdown.button-dropdown-open{
+            transform: translateY(-100px);
+            opacity: 1;
+        }
+
+        .menu{
+            position: relative;
+            transform: translateX(50px);
+            opacity: 0;
+            transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.8s;
+
+            width: 0%;
+            border-right: solid 1px #D9D9D9;
+            padding: 10px 10px 0px 15px;
+            height: 100px;
+
+            .button-dropdown-menu{
+                position: relative;
+                left: 70%;
+                background-color: transparent;
+                border: none;       
+                color: black;   
+                margin-bottom: 20px;
+
+                transition: transform 0.8s;
+
+                
+                img{
+                    width: 30px;
+                    height: 30px;
+                }
+
+                
+            }
+            p{
+                color: #757575;
+            }
+
+            li{
+                margin: 30px 0;
+                width: max-content;
+            }
+            
+            hr{
+                border-color: #D9D9D9;
+                width: 100%;
+            }
+        }
+
+        .menu.menu-open {
+            transform: translateX(2%);
+            margin-left: -23.15vw;
+            width: 149px;
+
+            .button-dropdown-menu{
+                transform: scaleX(-1) rotate(360deg) ;
+            }
+        }
+    }
+
+}
+
+/* Breakpoint para telas pequenas (tablets em modo retrato) */
+@media (min-width: 576px) {
+       
+}
+
+/* Breakpoint para telas médias (tablets em modo paisagem) */
+@media (min-width: 768px) {
+
+}
+
+/* Breakpoint para telas grandes (desktops pequenos) */
+@media (min-width: 992px) {
+    
+}
+
+/* Breakpoint para telas extra grandes (desktops grandes) */
+@media (min-width: 1200px) {
+  
+}
