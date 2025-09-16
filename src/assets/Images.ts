@@ -1,21 +1,14 @@
-import arrow from "./arrow.png";
-import card_add from "./card_add.png";
-import card_default from "./card_default.png";
-import left_arrow from "./left_arrow.png";
-import logo from "./matbloom 1.png";
-import menu from "./menu.png";
-import more_vertical from "./more_vertical.png";
-import search_icon from "./search_icon.png";
+import matbloom from "@/assets/matbloom.png"
 
 const Images = {
-  arrow: arrow,
-  card_add: card_add,
-  card_default: card_default,
-  left_arrow: left_arrow,
-  logo: logo,
-  menu: menu,
-  more_vertical: more_vertical,
-  search_icon: search_icon,
+  arrow: "/assets/arrow.png",
+  card_add: "/assets/card_add.png",
+  card_default: "/assets/card_default.png",
+  left_arrow: "/assets/left_arrow.png",
+  logo: matbloom,
+  menu: "/assets/menu.png",
+  more_vertical: "/assets/more_vertical.png",
+  search_icon: "/assets/search_icon.png",
 };
 
 export default Images;

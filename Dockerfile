@@ -1,15 +1,15 @@
 # Estágio de construção
-FROM node:22 as builder
+FROM node:22 AS builder
 
 WORKDIR /app
 
 # Copiar apenas o package.json e instalar dependências
 COPY package.json ./
-RUN yarn install
+RUN npm install
 
 # Copiar o restante do código e construir o projeto
 COPY . .
-RUN yarn build
+RUN npm run build
 
 # Estágio final
 FROM nginx:alpine
