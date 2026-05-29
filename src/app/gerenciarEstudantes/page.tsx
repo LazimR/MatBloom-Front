@@ -16,130 +16,130 @@ import { EllipsisVertical, Pencil, Plus, Search, Trash } from "lucide-react"
 import { useEffect, useState } from "react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
-export default function ManageStudentsPage() {
-  const students = [
-    {
-      id: 1,
-      name: "John Doe",
-    },
-    {
-      id: 2,
-      name: "Jane Doe",
-    },
-    {
-      id: 3,
-      name: "John Doe",
-    },
-    {
-      id: 4,
-      name: "Jane Doe",
-    },
-    {
-      id: 5,
-      name: "John Doe",
-    },
-    {
-      id: 6,
-      name: "Jane Doe",
-    },
-    {
-      id: 7,
-      name: "John Doe",
-    },
-    {
-      id: 8,
-      name: "Jane Doe",
-    },
-    {
-      id: 9,
-      name: "John Doe",
-    },
-    {
-      id: 10,
-      name: "Jane Doe",
-    },
-    {
-      id: 11,
-      name: "John Doe",
-    },
-    {
-      id: 12,
-      name: "Jane Doe",
-    },
-    {
-      id: 13,
-      name: "John Doe",
-    },
-    {
-      id: 14,
-      name: "Jane Doe",
-    },
-    {
-      id: 15,
-      name: "John Doe",
-    },
-    {
-      id: 16,
-      name: "Jane Doe",
-    },
-    {
-      id: 17,
-      name: "John Doe",
-    },
-    {
-      id: 18,
-      name: "Jane Doe",
-    },
-    {
-      id: 19,
-      name: "John Doe",
-    },
-    {
-      id: 20,
-      name: "Jane Doe",
-    },
-    {
-      id: 21,
-      name: "John Doe",
-    },
-    {
-      id: 22,
-      name: "Jane Doe",
-    },
-    {
-      id: 23,
-      name: "John Doe",
-    },
-    {
-      id: 24,
-      name: "Jane Doe",
-    },
-    {
-      id: 25,
-      name: "John Doe",
-    },
-    {
-      id: 26,
-      name: "Jane Doe",
-    },
-    {
-      id: 27,
-      name: "John Doe",
-    },
-    {
-      id: 28,
-      name: "Jane Doe",
-    },
-    {
-      id: 29,
-      name: "John Doe",
-    },
-    {
-      id: 30,
-      name: "Jane Doe",
-    },
-  ]
+const students = [
+  {
+    id: 1,
+    name: "John Doe",
+  },
+  {
+    id: 2,
+    name: "Jane Doe",
+  },
+  {
+    id: 3,
+    name: "John Doe",
+  },
+  {
+    id: 4,
+    name: "Jane Doe",
+  },
+  {
+    id: 5,
+    name: "John Doe",
+  },
+  {
+    id: 6,
+    name: "Jane Doe",
+  },
+  {
+    id: 7,
+    name: "John Doe",
+  },
+  {
+    id: 8,
+    name: "Jane Doe",
+  },
+  {
+    id: 9,
+    name: "John Doe",
+  },
+  {
+    id: 10,
+    name: "Jane Doe",
+  },
+  {
+    id: 11,
+    name: "John Doe",
+  },
+  {
+    id: 12,
+    name: "Jane Doe",
+  },
+  {
+    id: 13,
+    name: "John Doe",
+  },
+  {
+    id: 14,
+    name: "Jane Doe",
+  },
+  {
+    id: 15,
+    name: "John Doe",
+  },
+  {
+    id: 16,
+    name: "Jane Doe",
+  },
+  {
+    id: 17,
+    name: "John Doe",
+  },
+  {
+    id: 18,
+    name: "Jane Doe",
+  },
+  {
+    id: 19,
+    name: "John Doe",
+  },
+  {
+    id: 20,
+    name: "Jane Doe",
+  },
+  {
+    id: 21,
+    name: "John Doe",
+  },
+  {
+    id: 22,
+    name: "Jane Doe",
+  },
+  {
+    id: 23,
+    name: "John Doe",
+  },
+  {
+    id: 24,
+    name: "Jane Doe",
+  },
+  {
+    id: 25,
+    name: "John Doe",
+  },
+  {
+    id: 26,
+    name: "Jane Doe",
+  },
+  {
+    id: 27,
+    name: "John Doe",
+  },
+  {
+    id: 28,
+    name: "Jane Doe",
+  },
+  {
+    id: 29,
+    name: "John Doe",
+  },
+  {
+    id: 30,
+    name: "Jane Doe",
+  },
+]
 
+export default function ManageStudentsPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(5)
   const [searchTerm, setSearchTerm] = useState("")
@@ -311,7 +311,7 @@ export default function ManageStudentsPage() {
           )}
         </Table>
         {filteredStudents.length === 0 && (
-          <div className="text-center py-8 text-gray-500">Nenhum estudante encontrado para "{searchTerm}"</div>
+          <div className="text-center py-8 text-gray-500">Nenhum estudante encontrado para &quot;{searchTerm}&quot;</div>
         )}
       </CardContent>
     </Card>

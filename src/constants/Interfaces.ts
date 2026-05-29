@@ -15,11 +15,25 @@ export interface Student {
 export interface ClassRoom {
     id: number;
     name: string;
+    teacher_ids: number[];
     students: Student[]
 }
 
 export interface UserState {
-    name: string;
+    id: number | null;
+    username: string;
     email: string;
+    role: string;
     classes: ClassRoom[]
+}
+
+export interface AuthSession {
+    authenticated: boolean;
+    user: {
+        id: number;
+        username: string;
+        email: string;
+        role: string;
+        classes: ClassRoom[];
+    };
 }

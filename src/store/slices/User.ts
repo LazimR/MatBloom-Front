@@ -3,8 +3,10 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import type { UserState } from "../../constants/Interfaces";
 
 const initialState: UserState = {
-  name: "",
+  id: null,
+  username: "",
   email: "",
+  role: "",
   classes: [],
 };
 
@@ -13,13 +15,17 @@ const userSlice = createSlice({
     initialState,
     reducers: {
         setUser: (state, action:PayloadAction<UserState>) => {
-            state.name = action.payload.name;
+            state.id = action.payload.id;
+            state.username = action.payload.username;
             state.email = action.payload.email;
+            state.role = action.payload.role;
             state.classes = action.payload.classes;
         },
         clearUser: (state) => {
-            state.name = "";
+            state.id = null;
+            state.username = "";
             state.email = "";
+            state.role = "";
             state.classes = [];
         },
     }

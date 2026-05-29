@@ -61,7 +61,7 @@ export function ProvasCarousel() {
       {searchTerm && (
         <div className="text-sm text-muted-foreground">
           {filteredProvas.length === 0 ? (
-            <p>Nenhuma prova encontrada para "{searchTerm}"</p>
+            <p>Nenhuma prova encontrada para &quot;{searchTerm}&quot;</p>
           ) : (
             <p>{filteredProvas.length} prova{filteredProvas.length !== 1 ? 's' : ''} encontrada{filteredProvas.length !== 1 ? 's' : ''}</p>
           )}

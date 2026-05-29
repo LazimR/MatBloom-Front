@@ -59,7 +59,7 @@ export function TurmasCarousel() {
       {searchTerm && (
         <div className="text-sm text-muted-foreground">
           {filteredTurmas.length === 0 ? (
-            <p>Nenhuma turma encontrada para "{searchTerm}"</p>
+            <p>Nenhuma turma encontrada para &quot;{searchTerm}&quot;</p>
           ) : (
             <p>{filteredTurmas.length} turma{filteredTurmas.length !== 1 ? 's' : ''} encontrada{filteredTurmas.length !== 1 ? 's' : ''}</p>
           )}
