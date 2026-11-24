@@ -6,6 +6,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react"
 import { ArrowLeft, BookOpen, GraduationCap, Sparkles, TrendingUp } from "lucide-react"
 
 import { get, put } from "@/services/request/Index"
+import { AnswerSheetCorrection } from "@/components/answer-sheet-correction"
 import { useAppSelector } from "@/hooks/Redux"
 import { Button } from "@/components/ui/button"
 import {
@@ -58,6 +59,7 @@ type StudentAnalysis = {
   classroom_id: number
   overall_average: number | null
   total_attempts: number
+  unordered_attempts: number
   average_by_test: {
     test_id: number
     test_name: string
@@ -84,6 +86,7 @@ type StudentAnalysis = {
 }
 
 type TestDetail = {
+  counts_toward_average: boolean
   id: number
   name: string
   theme: string
@@ -121,16 +124,11 @@ export default function StudentDetailPage() {
       setIsLoading(true)
       setErrorMessage("")
 
-      const requests: Promise<any>[] = [
+      const [studentResponse, analysisResponse, classroomsResponse] = await Promise.all([
         get<StudentDetail>(`/student/${studentId}`),
         get<StudentAnalysis>(`/student/${studentId}/analysis`),
-      ]
-
-      if (canEdit) {
-        requests.push(get<ClassroomOption[]>("/classroom/"))
-      }
-
-      const [studentResponse, analysisResponse, classroomsResponse] = await Promise.all(requests)
+        canEdit ? get<ClassroomOption[]>("/classroom/") : Promise.resolve(null),
+      ])
 
       if (!isMounted) {
         return
@@ -139,7 +137,7 @@ export default function StudentDetailPage() {
       const studentOk = studentResponse.statusCode === 200 && "id" in studentResponse.responseBody
       const analysisOk = analysisResponse.statusCode === 200 && "student_id" in analysisResponse.responseBody
 
-      if (!studentOk || !analysisOk) {
+      if (!studentOk || !analysisOk || !("id" in studentResponse.responseBody) || !("student_id" in analysisResponse.responseBody)) {
         setErrorMessage(
           !studentOk && "error" in studentResponse.responseBody
             ? studentResponse.responseBody.error
@@ -284,10 +282,15 @@ export default function StudentDetailPage() {
               </p>
             </div>
           </div>
-          <span className="rounded-full bg-teal-50 px-4 py-2 text-sm font-medium text-teal-700">
-            {student.active ? "Aluno ativo" : "Aluno inativo"}
-          </span>
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="rounded-full bg-teal-50 px-4 py-2 text-sm font-medium text-teal-700">
+              {student.active ? "Aluno ativo" : "Aluno inativo"}
+            </span>
+            {student.active && <Button asChild><Link href={`/provas?aluno=${student.id}`}>Gerar prova de reforço</Link></Button>}
+          </div>
         </div>
+
+        {analysis.unordered_attempts > 0 && <p className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">{analysis.unordered_attempts} resposta(s) de provas antigas não entram nas análises por conteúdo e Bloom porque a ordem das questões não foi registrada. As notas continuam nas médias.</p>}
 
         {errorMessage ? (
           <Card className="border-destructive/30 bg-destructive/5">
@@ -300,12 +303,14 @@ export default function StudentDetailPage() {
           </Card>
         ) : null}
 
+        <AnswerSheetCorrection scope={{ kind: "student", id: student.id, classroomId: student.classroom_id }} />
+
         <section className="grid gap-4 xl:grid-cols-4">
           <MetricCard
             icon={TrendingUp}
             label="Média geral"
             value={analysis.overall_average !== null ? analysis.overall_average.toFixed(2) : "Sem nota"}
-            helper="Média das respostas registradas"
+            helper="Somente atividades que contam para a média"
           />
           <MetricCard
             icon={BookOpen}
@@ -459,6 +464,7 @@ export default function StudentDetailPage() {
                       <TableHead>Tema</TableHead>
                       <TableHead>Data</TableHead>
                       <TableHead>Nota</TableHead>
+                      <TableHead>Conta na média</TableHead>
                       <TableHead>Erros</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -469,6 +475,7 @@ export default function StudentDetailPage() {
                         <TableCell>{testDetails[response.test_id]?.theme || "Tema não disponível"}</TableCell>
                         <TableCell>{new Date(response.attempt_date).toLocaleDateString("pt-BR")}</TableCell>
                         <TableCell>{response.score?.toFixed?.(2) ?? response.score}</TableCell>
+                        <TableCell>{testDetails[response.test_id] ? (testDetails[response.test_id].counts_toward_average ? "Sim" : "Não") : "—"}</TableCell>
                         <TableCell>{response.wrong_questions.length}</TableCell>
                       </TableRow>
                     ))}
@@ -481,15 +488,8 @@ export default function StudentDetailPage() {
           <Card className="border-border/70">
             <CardHeader>
               <CardTitle>Síntese Diagnóstica</CardTitle>
-              <CardDescription>
-                O foco atual do sistema é identificar erros, conteúdos e níveis cognitivos com maior dificuldade.
-              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-3 text-sm text-amber-900">
-                A geração automática de novas questões e provas foi descontinuada. Esta tela agora serve apenas para diagnóstico de desempenho.
-              </div>
-
               <div className="space-y-3">
                 <div className="rounded-md border border-border p-3">
                   <p className="text-sm font-medium text-foreground">Conteúdos com mais erro</p>

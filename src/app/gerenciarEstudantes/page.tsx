@@ -1,319 +1,121 @@
 "use client"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  Pagination,
-  PaginationNext,
-  PaginationItem,
-  PaginationPrevious,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationLink,
-} from "@/components/ui/pagination"
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableFooter } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { EllipsisVertical, Pencil, Plus, Search, Trash } from "lucide-react"
-import { useEffect, useState } from "react"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
-const students = [
-  {
-    id: 1,
-    name: "John Doe",
-  },
-  {
-    id: 2,
-    name: "Jane Doe",
-  },
-  {
-    id: 3,
-    name: "John Doe",
-  },
-  {
-    id: 4,
-    name: "Jane Doe",
-  },
-  {
-    id: 5,
-    name: "John Doe",
-  },
-  {
-    id: 6,
-    name: "Jane Doe",
-  },
-  {
-    id: 7,
-    name: "John Doe",
-  },
-  {
-    id: 8,
-    name: "Jane Doe",
-  },
-  {
-    id: 9,
-    name: "John Doe",
-  },
-  {
-    id: 10,
-    name: "Jane Doe",
-  },
-  {
-    id: 11,
-    name: "John Doe",
-  },
-  {
-    id: 12,
-    name: "Jane Doe",
-  },
-  {
-    id: 13,
-    name: "John Doe",
-  },
-  {
-    id: 14,
-    name: "Jane Doe",
-  },
-  {
-    id: 15,
-    name: "John Doe",
-  },
-  {
-    id: 16,
-    name: "Jane Doe",
-  },
-  {
-    id: 17,
-    name: "John Doe",
-  },
-  {
-    id: 18,
-    name: "Jane Doe",
-  },
-  {
-    id: 19,
-    name: "John Doe",
-  },
-  {
-    id: 20,
-    name: "Jane Doe",
-  },
-  {
-    id: 21,
-    name: "John Doe",
-  },
-  {
-    id: 22,
-    name: "Jane Doe",
-  },
-  {
-    id: 23,
-    name: "John Doe",
-  },
-  {
-    id: 24,
-    name: "Jane Doe",
-  },
-  {
-    id: 25,
-    name: "John Doe",
-  },
-  {
-    id: 26,
-    name: "Jane Doe",
-  },
-  {
-    id: 27,
-    name: "John Doe",
-  },
-  {
-    id: 28,
-    name: "Jane Doe",
-  },
-  {
-    id: 29,
-    name: "John Doe",
-  },
-  {
-    id: 30,
-    name: "Jane Doe",
-  },
-]
+import Link from "next/link"
+import { useEffect, useMemo, useState } from "react"
+import { Search } from "lucide-react"
+
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { get } from "@/services/request/Index"
+import { useAppSelector } from "@/hooks/Redux"
+import { StudentCreateForm, type StudentClassroomOption } from "@/components/student-create-form"
+
+type Student = { id: number; name: string; registration: string; classroom_id: number; active: boolean }
+type Classroom = StudentClassroomOption
+
+const PAGE_SIZE = 10
 
 export default function ManageStudentsPage() {
-  const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize, setPageSize] = useState(5)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [filteredStudents, setFilteredStudents] = useState(students)
-  const [totalPages, setTotalPages] = useState(Math.ceil(filteredStudents.length / pageSize))
-  const [viewStudents, setViewStudents] = useState(filteredStudents)
+  const role = useAppSelector((state) => state.user.role)
+  const [creating, setCreating] = useState(false)
+  const [initialClassroomId, setInitialClassroomId] = useState<number | undefined>()
+  const [success, setSuccess] = useState("")
+  const [students, setStudents] = useState<Student[]>([])
+  const [classrooms, setClassrooms] = useState<Classroom[]>([])
+  const [search, setSearch] = useState("")
+  const [page, setPage] = useState(1)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
 
   useEffect(() => {
-    const filtered = students.filter((student) => student.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    setFilteredStudents(filtered)
-    setCurrentPage(1)
-  }, [searchTerm])
-
-  useEffect(() => {
-    const start = (currentPage - 1) * pageSize
-    const end = start + pageSize
-    setViewStudents(filteredStudents.slice(start, end))
-    setTotalPages(Math.ceil(filteredStudents.length / pageSize))
-  }, [currentPage, pageSize, filteredStudents])
-
-  const getPageNumbers = () => {
-    const pages = []
-    const maxVisiblePages = 5
-    
-    if (totalPages <= maxVisiblePages) {
-        // Se temos 3 páginas ou menos, mostra todas
-        for (let i = 1; i <= totalPages; i++) {
-            pages.push(i)
+    let mounted = true
+    async function load() {
+      const [studentResult, classroomResult] = await Promise.all([
+        get<Student[]>("/student/"),
+        get<Classroom[]>("/classroom/"),
+      ])
+      if (!mounted) return
+      if (studentResult.statusCode !== 200 || !Array.isArray(studentResult.responseBody)) {
+        setError("error" in studentResult.responseBody ? studentResult.responseBody.error : "Não foi possível carregar os alunos.")
+      } else {
+        setStudents(studentResult.responseBody)
+      }
+      if (classroomResult.statusCode === 200 && Array.isArray(classroomResult.responseBody)) {
+        setClassrooms(classroomResult.responseBody)
+        const requested = new URLSearchParams(window.location.search).get("turma")
+        if (requested && /^\d+$/.test(requested) && classroomResult.responseBody.some((classroom) => classroom.id === Number(requested) && classroom.active)) {
+          setInitialClassroomId(Number(requested))
+          setCreating(true)
         }
-    } else {
-        // Se temos mais de 3 páginas, aplica a lógica de intervalo
-        if (currentPage <= 2) {
-            // Páginas 1, 2, 3
-            for (let i = 1; i <= 3; i++) {
-                pages.push(i)
-            }
-        } else if (currentPage >= totalPages - 1) {
-            // Últimas 3 páginas
-            for (let i = totalPages - 2; i <= totalPages; i++) {
-                pages.push(i)
-            }
-        } else {
-            // Página atual e uma antes e uma depois
-            for (let i = currentPage - 1; i <= currentPage + 1; i++) {
-                pages.push(i)
-            }
-        }
+      } else {
+        setError("Não foi possível carregar as turmas.")
+      }
+      setLoading(false)
     }
-    
-    return pages
-}
+    load()
+    return () => { mounted = false }
+  }, [])
 
-  const handleAddStudent = () => {
-    console.log("Add student clicked")
-  }
+  const classroomNames = useMemo(() => new Map(classrooms.map((classroom) => [classroom.id, classroom.name])), [classrooms])
+  const filtered = useMemo(() => {
+    const term = search.trim().toLocaleLowerCase("pt-BR")
+    return students.filter((student) =>
+      `${student.name} ${student.registration} ${classroomNames.get(student.classroom_id) ?? ""}`.toLocaleLowerCase("pt-BR").includes(term)
+    )
+  }, [students, classroomNames, search])
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const visibleStudents = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle>Estudantes</CardTitle>
-          <Button onClick={handleAddStudent} className="bg-teal-600 hover:bg-teal-700">
-            <Plus className="h-4 w-4 mr-2" />
-            Adicionar Aluno
-          </Button>
-        </div>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-          <Input
-            placeholder="Pesquisar por nome..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Nome</TableHead>
-              <TableHead>Turma</TableHead>
-              <TableHead>ID</TableHead>
-              <TableHead>Ações</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {viewStudents.map((student) => (
-              <TableRow key={student.id}>
-                <TableCell>{student.name}</TableCell>
-                <TableCell>{"-"}</TableCell>
-                <TableCell>{student.id}</TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="sm">
-                            <EllipsisVertical className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        <DropdownMenuItem>
-                            <Pencil className="h-4 w-4" />
-                            Editar
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <Trash className="h-4 w-4" />
-                            Excluir
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-          {filteredStudents.length > 0 && (
-            <TableFooter>
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      href="#"
-                      onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                      className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
-                    />
-                  </PaginationItem>
-                  {currentPage > 2 && totalPages > 3 && (
-                    <>
-                      <PaginationItem>
-                        <PaginationLink onClick={() => setCurrentPage(1)}>1</PaginationLink>
-                      </PaginationItem>
-                      {currentPage > 3 && (
-                        <PaginationItem>
-                          <PaginationEllipsis />
-                        </PaginationItem>
-                      )}
-                    </>
-                  )}
-
-                  {getPageNumbers().map((page) => (
-                    <PaginationItem key={page}>
-                      <PaginationLink 
-                        onClick={() => setCurrentPage(page)} 
-                        isActive={currentPage === page}
-                    >
-                        {page}
-                      </PaginationLink>
-                    </PaginationItem>
-                  ))}
-
-                  {currentPage < totalPages - 1 && totalPages > 3 && (
-                    <>
-                      {currentPage < totalPages - 2 && (
-                        <PaginationItem>
-                          <PaginationEllipsis />
-                        </PaginationItem>
-                      )}
-                      <PaginationItem>
-                        <PaginationLink onClick={() => setCurrentPage(totalPages)}>{totalPages}</PaginationLink>
-                      </PaginationItem>
-                    </>
-                  )}
-                  <PaginationItem>
-                    <PaginationNext href="#" onClick={() => setCurrentPage(currentPage + 1)} 
-                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""} />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-            </TableFooter>
-          )}
-        </Table>
-        {filteredStudents.length === 0 && (
-          <div className="text-center py-8 text-gray-500">Nenhum estudante encontrado para &quot;{searchTerm}&quot;</div>
-        )}
-      </CardContent>
-    </Card>
+    <div className="min-h-screen bg-muted/30">
+      <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-6 py-8">
+        {(role === "admin" || role === "diretor") && !creating && <div><Button type="button" onClick={() => { setInitialClassroomId(undefined); setCreating(true); setSuccess("") }}>Cadastrar aluno</Button></div>}
+        {creating && (role === "admin" || role === "diretor") && <StudentCreateForm classrooms={classrooms} initialClassroomId={initialClassroomId} onCancel={() => setCreating(false)} onSaved={(student) => { setStudents((current) => [...current, student]); setCreating(false); setSearch(""); setPage(1); setSuccess("Aluno cadastrado com sucesso.") }} />}
+        {success && <p role="status" className="rounded-md border border-teal-200 bg-teal-50 p-3 text-sm text-teal-800">{success}</p>}
+        <Card className="border-border/70">
+          <CardHeader className="gap-4">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div>
+                <CardTitle className="text-3xl tracking-tight">Alunos</CardTitle>
+                <CardDescription className="mt-2 text-base">Consulte os alunos disponíveis e acesse seus detalhes e análises.</CardDescription>
+              </div>
+              <div className="relative w-full md:w-80">
+                <Search aria-hidden="true" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input aria-label="Buscar alunos" placeholder="Buscar por nome, matrícula ou turma" value={search} onChange={(event) => { setSearch(event.target.value); setPage(1) }} className="pl-10" />
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {error && <p role="alert" className="mb-4 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">{error}</p>}
+            {loading ? <p className="py-8 text-center text-sm text-muted-foreground">Carregando alunos...</p> : filtered.length === 0 ? (
+              <p className="py-8 text-center text-sm text-muted-foreground">{error && students.length === 0 ? "Não foi possível exibir os alunos." : "Nenhum aluno encontrado."}</p>
+            ) : (
+              <>
+                <Table>
+                  <TableHeader><TableRow><TableHead>Nome</TableHead><TableHead>Matrícula</TableHead><TableHead>Turma</TableHead><TableHead>Situação</TableHead><TableHead><span className="sr-only">Detalhes</span></TableHead></TableRow></TableHeader>
+                  <TableBody>
+                    {visibleStudents.map((student) => (
+                      <TableRow key={student.id}>
+                        <TableCell className="font-medium">{student.name}</TableCell>
+                        <TableCell>{student.registration}</TableCell>
+                        <TableCell>{classroomNames.get(student.classroom_id) ?? `Turma ${student.classroom_id}`}</TableCell>
+                        <TableCell>{student.active ? "Ativo" : "Inativo"}</TableCell>
+                        <TableCell><Button asChild variant="outline" size="sm"><Link href={`/alunos/${student.id}`} aria-label={`Ver detalhes de ${student.name}`}>Ver detalhes</Link></Button></TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground">
+                  <span>{filtered.length} aluno{filtered.length === 1 ? "" : "s"} · Página {page} de {totalPages}</span>
+                  <div className="flex gap-2"><Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage((current) => current - 1)}>Anterior</Button><Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage((current) => current + 1)}>Próxima</Button></div>
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+      </main>
+    </div>
   )
 }

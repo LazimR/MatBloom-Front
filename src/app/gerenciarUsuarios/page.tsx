@@ -29,15 +29,18 @@ type AdminUser = {
   email: string
   role: string
 }
+type TeacherSummary = Omit<AdminUser, "role">
 
 export default function ManageUsersPage() {
   const user = useAppSelector((state) => state.user)
   const [users, setUsers] = useState<AdminUser[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState("")
+  const [listError, setListError] = useState("")
   const [successMessage, setSuccessMessage] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [directorForm, setDirectorForm] = useState({
+  const [newRole, setNewRole] = useState<"professor" | "diretor">("professor")
+  const [userForm, setUserForm] = useState({
     username: "",
     email: "",
     password: "",
@@ -47,19 +50,19 @@ export default function ManageUsersPage() {
     let isMounted = true
 
     async function loadUsers() {
-      if (user.role !== "admin") {
+      if (user.role !== "admin" && user.role !== "diretor") {
         setIsLoading(false)
         return
       }
 
-      const response = await get<AdminUser[]>("/user/")
+      const response = await get<(AdminUser | TeacherSummary)[]>(user.role === "admin" ? "/user/" : "/user/directory/teachers")
 
       if (!isMounted) {
         return
       }
 
       if (response.statusCode !== 200 || !Array.isArray(response.responseBody)) {
-        setErrorMessage(
+        setListError(
           "error" in response.responseBody
             ? response.responseBody.error
             : "Não foi possível carregar os usuários."
@@ -68,7 +71,7 @@ export default function ManageUsersPage() {
         return
       }
 
-      setUsers(response.responseBody)
+      setUsers(response.responseBody.map((listedUser) => "role" in listedUser ? listedUser : { ...listedUser, role: "professor" }))
       setIsLoading(false)
     }
 
@@ -79,36 +82,37 @@ export default function ManageUsersPage() {
     }
   }, [user.role])
 
-  async function handleCreateDirector(event: FormEvent<HTMLFormElement>) {
+  async function handleCreateUser(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setErrorMessage("")
     setSuccessMessage("")
     setIsSubmitting(true)
 
     const response = await post<AdminUser>("/user/", {
-      username: directorForm.username,
-      email: directorForm.email,
-      password: directorForm.password,
-      role: "diretor",
+      username: userForm.username,
+      email: userForm.email,
+      password: userForm.password,
+      role: user.role === "diretor" ? "professor" : newRole,
     })
 
     if (response.statusCode !== 200 || !("id" in response.responseBody)) {
       setErrorMessage(
         "error" in response.responseBody
           ? response.responseBody.error
-          : "Não foi possível criar o diretor."
+          : "Não foi possível criar o usuário."
       )
       setIsSubmitting(false)
       return
     }
 
-    setUsers((currentUsers) => [...currentUsers, response.responseBody])
-    setDirectorForm({ username: "", email: "", password: "" })
-    setSuccessMessage(`Diretor ${response.responseBody.username} criado com sucesso.`)
+    const createdUser = response.responseBody
+    setUsers((currentUsers) => [...currentUsers, createdUser])
+    setUserForm({ username: "", email: "", password: "" })
+    setSuccessMessage(`${createdUser.role === "diretor" ? "Diretor" : "Professor"} ${createdUser.username} criado com sucesso.`)
     setIsSubmitting(false)
   }
 
-  if (user.role !== "admin") {
+  if (user.role !== "admin" && user.role !== "diretor") {
     return (
       <div className="min-h-screen bg-muted/30">
         <main className="mx-auto max-w-4xl px-6 py-8">
@@ -116,7 +120,7 @@ export default function ManageUsersPage() {
             <CardHeader>
               <CardTitle className="text-amber-900">Acesso restrito</CardTitle>
               <CardDescription className="text-amber-800">
-                Apenas administradores podem gerenciar usuários e criar diretores.
+                Esta área é restrita a administradores e diretores.
               </CardDescription>
             </CardHeader>
           </Card>
@@ -126,6 +130,7 @@ export default function ManageUsersPage() {
   }
 
   const directorUsers = users.filter((listedUser) => listedUser.role === "diretor")
+  const teacherUsers = users.filter((listedUser) => listedUser.role === "professor")
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -134,26 +139,28 @@ export default function ManageUsersPage() {
           <CardHeader>
             <CardTitle className="text-3xl tracking-tight">Gerenciar Usuários</CardTitle>
             <CardDescription>
-              Área administrativa para criação de usuários com privilégio de diretor.
+              {user.role === "admin" ? "Cadastre professores e diretores." : "Cadastre professores para a instituição."}
             </CardDescription>
           </CardHeader>
         </Card>
 
-        <section className="grid gap-6 xl:grid-cols-[1.1fr_1.4fr]">
+        <section className={user.role === "admin" ? "grid gap-6 xl:grid-cols-[1.1fr_1.4fr]" : "grid gap-6"}>
           <Card className="border-border/70">
             <CardHeader>
-              <CardTitle>Criar Diretor</CardTitle>
+              <CardTitle>{user.role === "admin" ? "Criar usuário" : "Cadastrar professor"}</CardTitle>
               <CardDescription>
-                O papel é fixado como diretor para manter o fluxo incremental desta etapa.
+                {user.role === "admin" ? "Selecione o papel do novo usuário." : "Preencha os dados para criar o acesso do professor."}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <form className="space-y-3" onSubmit={handleCreateDirector}>
+              <form className="space-y-3" onSubmit={handleCreateUser}>
+                {user.role === "admin" && <label className="block space-y-2 text-sm font-medium">Papel<select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value={newRole} onChange={(event) => setNewRole(event.target.value as "professor" | "diretor")}><option value="professor">Professor</option><option value="diretor">Diretor</option></select></label>}
                 <Input
+                  aria-label="Nome de usuário"
                   placeholder="Nome de usuário"
-                  value={directorForm.username}
+                  value={userForm.username}
                   onChange={(event) =>
-                    setDirectorForm((currentForm) => ({
+                    setUserForm((currentForm) => ({
                       ...currentForm,
                       username: event.target.value,
                     }))
@@ -162,10 +169,11 @@ export default function ManageUsersPage() {
                 />
                 <Input
                   type="email"
+                  aria-label="Email institucional"
                   placeholder="Email institucional"
-                  value={directorForm.email}
+                  value={userForm.email}
                   onChange={(event) =>
-                    setDirectorForm((currentForm) => ({
+                    setUserForm((currentForm) => ({
                       ...currentForm,
                       email: event.target.value,
                     }))
@@ -174,10 +182,11 @@ export default function ManageUsersPage() {
                 />
                 <Input
                   type="password"
+                  aria-label="Senha inicial"
                   placeholder="Senha inicial"
-                  value={directorForm.password}
+                  value={userForm.password}
                   onChange={(event) =>
-                    setDirectorForm((currentForm) => ({
+                    setUserForm((currentForm) => ({
                       ...currentForm,
                       password: event.target.value,
                     }))
@@ -189,14 +198,15 @@ export default function ManageUsersPage() {
                   className="w-full bg-teal-700 text-white hover:bg-teal-800"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Criando diretor..." : "Criar usuário diretor"}
+                  {isSubmitting ? "Criando usuário..." : user.role === "diretor" || newRole === "professor" ? "Cadastrar professor" : "Cadastrar diretor"}
                 </Button>
               </form>
 
               {errorMessage ? <p className="text-sm text-destructive">{errorMessage}</p> : null}
               {successMessage ? <p className="text-sm text-teal-700">{successMessage}</p> : null}
+              {(user.role === "diretor" || newRole === "professor") && <p className="text-xs text-muted-foreground">Após o cadastro, vincule o professor na página de detalhes da turma para liberar o acesso a ela.</p>}
 
-              <div className="grid gap-3 sm:grid-cols-2">
+              {user.role === "admin" && <div className="grid gap-3 sm:grid-cols-2">
                 <MiniMetric
                   icon={ShieldCheck}
                   label="Diretores"
@@ -207,11 +217,11 @@ export default function ManageUsersPage() {
                   label="Usuários totais"
                   value={String(users.length)}
                 />
-              </div>
+              </div>}
             </CardContent>
           </Card>
 
-          <Card className="border-border/70">
+          {user.role === "admin" && <Card className="border-border/70">
             <CardHeader>
               <CardTitle>Diretores cadastrados</CardTitle>
               <CardDescription>
@@ -219,7 +229,9 @@ export default function ManageUsersPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {isLoading ? (
+              {listError ? (
+                <p role="alert" className="text-sm text-destructive">{listError}</p>
+              ) : isLoading ? (
                 <p className="text-sm text-muted-foreground">Carregando usuários...</p>
               ) : directorUsers.length === 0 ? (
                 <p className="text-sm text-muted-foreground">Nenhum diretor encontrado.</p>
@@ -244,8 +256,14 @@ export default function ManageUsersPage() {
                 </Table>
               )}
             </CardContent>
-          </Card>
+          </Card>}
         </section>
+        <Card className="border-border/70">
+          <CardHeader><CardTitle>Professores cadastrados</CardTitle><CardDescription>Professores com acesso cadastrado no sistema.</CardDescription></CardHeader>
+          <CardContent>
+            {listError ? <p role="alert" className="text-sm text-destructive">{listError}</p> : isLoading ? <p className="text-sm text-muted-foreground">Carregando professores...</p> : teacherUsers.length === 0 ? <p className="text-sm text-muted-foreground">Nenhum professor encontrado.</p> : <Table><TableHeader><TableRow><TableHead>ID</TableHead><TableHead>Usuário</TableHead><TableHead>Email</TableHead></TableRow></TableHeader><TableBody>{teacherUsers.map((teacher) => <TableRow key={teacher.id}><TableCell>{teacher.id}</TableCell><TableCell>{teacher.username}</TableCell><TableCell>{teacher.email}</TableCell></TableRow>)}</TableBody></Table>}
+          </CardContent>
+        </Card>
       </main>
     </div>
   )

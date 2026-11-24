@@ -1,6 +1,6 @@
 "use client"
 
-import { BookOpen, FileQuestion, Settings, Users, LogOut, Home, ShieldCheck, Building2 } from "lucide-react"
+import { BookOpen, FileQuestion, Users, LogOut, Home, ShieldCheck, Building2 } from "lucide-react"
 import { User, CreditCard, Bell } from "lucide-react"
 import Images from "@/assets/Images"
 import { useRouter } from "next/navigation"
@@ -51,16 +51,16 @@ const items = [
     roles: ["admin", "diretor", "professor"],
   },
   {
+    title: "Provas",
+    url: "/provas",
+    icon: BookOpen,
+    roles: ["admin", "diretor", "professor"],
+  },
+  {
     title: "Gerenciar Usuários",
     url: "/gerenciarUsuarios",
     icon: ShieldCheck,
-    roles: ["admin"],
-  },
-  {
-    title: "Configurações",
-    url: "#",
-    icon: Settings,
-    roles: ["admin", "diretor", "professor"],
+    roles: ["admin", "diretor"],
   }
 ]
 
@@ -101,15 +101,6 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
-              <SidebarSeparator />
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <a href="#">
-                    <BookOpen />
-                    <span>Guia</span>
-                  </a>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

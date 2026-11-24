@@ -5,6 +5,9 @@ import { useEffect, useMemo, useState } from "react"
 import { BookOpen, Search, Users } from "lucide-react"
 
 import { get } from "@/services/request/Index"
+import { useAppSelector } from "@/hooks/Redux"
+import { Button } from "@/components/ui/button"
+import { ClassroomForm } from "@/components/classroom-form"
 import {
   Card,
   CardContent,
@@ -41,6 +44,9 @@ const shiftLabels: Record<string, string> = {
 }
 
 export default function ClassroomsPage() {
+  const role = useAppSelector((state) => state.user.role)
+  const [creating, setCreating] = useState(false)
+  const [success, setSuccess] = useState("")
   const [classrooms, setClassrooms] = useState<ClassroomListItem[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [isLoading, setIsLoading] = useState(true)
@@ -120,6 +126,10 @@ export default function ClassroomsPage() {
             </div>
           </CardHeader>
         </Card>
+
+        {(role === "admin" || role === "diretor") && !creating && <div><Button type="button" onClick={() => { setCreating(true); setSuccess("") }}>Cadastrar turma</Button></div>}
+        {creating && (role === "admin" || role === "diretor") && <ClassroomForm onCancel={() => setCreating(false)} onSaved={(classroom) => { setClassrooms((current) => [...current, classroom]); setCreating(false); setSuccess("Turma cadastrada com sucesso.") }} />}
+        {success && <p role="status" className="rounded-md border border-teal-200 bg-teal-50 p-3 text-sm text-teal-800">{success}</p>}
 
         {errorMessage ? (
           <Card className="border-destructive/30 bg-destructive/5">

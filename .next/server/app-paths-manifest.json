@@ -1,1 +1,8 @@
-{}
+{
+  "/dashboard/page": "app/dashboard/page.js",
+  "/gerenciarQuestoes/page": "app/gerenciarQuestoes/page.js",
+  "/gerenciarEstudantes/page": "app/gerenciarEstudantes/page.js",
+  "/turmas/[classroomId]/page": "app/turmas/[classroomId]/page.js",
+  "/alunos/[studentId]/page": "app/alunos/[studentId]/page.js",
+  "/login/page": "app/login/page.js"
+}

@@ -53,6 +53,16 @@ export async function post<T = any>(url: string, body: any): Promise<ApiResponse
   }
 }
 
+export async function postForm<T>(url: string, body: FormData): Promise<ApiResponse<T | ErrorResponse>> {
+  try {
+    const response: AxiosResponse<T> = await axiosClient.post(url, body);
+    return { statusCode: response.status, responseBody: response.data };
+  } catch (error: any) {
+    const detail = error?.response?.data?.detail;
+    return { statusCode: error?.response?.status || 0, responseBody: { error: typeof detail === 'string' ? detail : 'Não foi possível enviar o arquivo.' } };
+  }
+}
+
 export async function put<T = any>(url: string, body: any): Promise<ApiResponse<T | ErrorResponse>> {
   try {
     const response: AxiosResponse<T> = await axiosClient.put(url, body, {
@@ -70,6 +80,15 @@ export async function put<T = any>(url: string, body: any): Promise<ApiResponse<
       statusCode: error?.response?.status || 500,
       responseBody: { error: errorDetail }
     };
+  }
+}
+
+export async function patch<T = any>(url: string, body: any): Promise<ApiResponse<T | ErrorResponse>> {
+  try {
+    const response: AxiosResponse<T> = await axiosClient.patch(url, body);
+    return { statusCode: response.status, responseBody: response.data };
+  } catch (error: any) {
+    return { statusCode: error?.response?.status || 500, responseBody: { error: error?.response?.data?.detail || 'Erro na request' } };
   }
 }
 

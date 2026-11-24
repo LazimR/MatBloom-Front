@@ -33,7 +33,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         return
       }
 
-      if (isAuthenticated) {
+      if (isAuthenticated && "user" in sessionResponse.responseBody) {
         const session = sessionResponse.responseBody
         dispatch(
           setUser({

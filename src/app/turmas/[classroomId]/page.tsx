@@ -3,9 +3,15 @@
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
-import { ArrowLeft, BarChart3, BookOpen, TrendingUp, Users } from "lucide-react"
+import * as Dialog from "@radix-ui/react-dialog"
+import { ArrowLeft, BarChart3, BookOpen, TrendingUp, Users, X } from "lucide-react"
 
 import { get } from "@/services/request/Index"
+import { useAppSelector } from "@/hooks/Redux"
+import { ClassroomForm } from "@/components/classroom-form"
+import { ClassroomTeachers } from "@/components/classroom-teachers"
+import { AnswerSheetCorrection } from "@/components/answer-sheet-correction"
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -52,6 +58,7 @@ type ClassroomAnalysis = {
   shift: string
   student_count: number
   active_students: number
+  unordered_attempts: number
   overall_average: number | null
   average_by_test: {
     test_id: number
@@ -95,6 +102,9 @@ const shiftLabels: Record<string, string> = {
 export default function ClassroomDetailPage() {
   const params = useParams<{ classroomId: string }>()
   const classroomId = params.classroomId
+  const role = useAppSelector((state) => state.user.role)
+  const [editing, setEditing] = useState(false)
+  const [editSuccess, setEditSuccess] = useState("")
 
   const [classroom, setClassroom] = useState<ClassroomDetail | null>(null)
   const [analysis, setAnalysis] = useState<ClassroomAnalysis | null>(null)
@@ -120,7 +130,7 @@ export default function ClassroomDetailPage() {
       const classroomOk = classroomResponse.statusCode === 200 && "id" in classroomResponse.responseBody
       const analysisOk = analysisResponse.statusCode === 200 && "classroom_id" in analysisResponse.responseBody
 
-      if (!classroomOk || !analysisOk) {
+      if (!classroomOk || !analysisOk || !("id" in classroomResponse.responseBody) || !("classroom_id" in analysisResponse.responseBody)) {
         setErrorMessage(
           !classroomOk && "error" in classroomResponse.responseBody
             ? classroomResponse.responseBody.error
@@ -200,10 +210,34 @@ export default function ClassroomDetailPage() {
               </p>
             </div>
           </div>
-          <span className="rounded-full bg-teal-50 px-4 py-2 text-sm font-medium text-teal-700">
-            {classroom.active ? "Turma ativa" : "Turma inativa"}
-          </span>
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="rounded-full bg-teal-50 px-4 py-2 text-sm font-medium text-teal-700">
+              {classroom.active ? "Turma ativa" : "Turma inativa"}
+            </span>
+            {(role === "admin" || role === "diretor") && classroom.active && <Button asChild variant="outline"><Link href={`/gerenciarEstudantes?turma=${classroom.id}`}>Cadastrar aluno</Link></Button>}
+            {(role === "admin" || role === "diretor") && <Dialog.Root>
+              <Dialog.Trigger asChild><Button type="button" variant="outline">Professores da turma</Button></Dialog.Trigger>
+              <Dialog.Portal>
+                <Dialog.Overlay className="fixed inset-0 z-50 bg-black/50" />
+                <Dialog.Content className="fixed left-1/2 top-1/2 z-50 max-h-[85vh] w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-lg border bg-background p-6 shadow-lg">
+                  <Dialog.Title className="pr-8 text-lg font-semibold">Professores da turma</Dialog.Title>
+                  <Dialog.Description className="mt-1 text-sm text-muted-foreground">Vincule professores para que possam acessar os dados desta turma.</Dialog.Description>
+                  <Dialog.Close asChild><button type="button" aria-label="Fechar" className="absolute right-4 top-4 rounded-sm p-1 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><X className="h-4 w-4" /></button></Dialog.Close>
+                  <div className="mt-5"><ClassroomTeachers classroom={classroom} onUpdated={setClassroom} /></div>
+                </Dialog.Content>
+              </Dialog.Portal>
+            </Dialog.Root>}
+            {(role === "admin" || role === "diretor") && !editing && <Button type="button" variant="outline" onClick={() => { setEditing(true); setEditSuccess("") }}>Editar turma</Button>}
+            {classroom.active && <Button asChild><Link href={`/provas?turma=${classroom.id}`}>Gerar prova de reforço</Link></Button>}
+          </div>
         </div>
+
+        {editing && (role === "admin" || role === "diretor") && <ClassroomForm classroom={classroom} onCancel={() => setEditing(false)} onSaved={(updated) => { setClassroom(updated); setAnalysis((current) => current ? { ...current, classroom_name: updated.name, school_year: updated.school_year, grade_level: updated.grade_level, shift: updated.shift } : current); setEditing(false); setEditSuccess("Turma atualizada com sucesso.") }} />}
+        {editSuccess && <p role="status" className="rounded-md border border-teal-200 bg-teal-50 p-3 text-sm text-teal-800">{editSuccess}</p>}
+
+        {analysis.unordered_attempts > 0 && <p className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">{analysis.unordered_attempts} resposta(s) de provas antigas não entram nas análises por conteúdo e Bloom porque a ordem das questões não foi registrada. As notas continuam nas médias.</p>}
+
+        <AnswerSheetCorrection scope={{ kind: "classroom", id: classroom.id }} />
 
         <section className="grid gap-4 xl:grid-cols-4">
           <MetricCard
@@ -216,7 +250,7 @@ export default function ClassroomDetailPage() {
             icon={TrendingUp}
             label="Média geral"
             value={analysis.overall_average !== null ? analysis.overall_average.toFixed(2) : "Sem notas"}
-            helper="Notas das respostas registradas"
+            helper="Somente atividades que contam para a média"
           />
           <MetricCard
             icon={BookOpen}
