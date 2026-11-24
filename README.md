@@ -1,91 +1,94 @@
-# MatBloom Frontend - Next.js
+# MatBloom Front
 
-Este projeto foi migrado do Vite/React para Next.js.
+Interface web do MatBloom para cadastro de questões, gestão de turmas e alunos, criação de provas e acompanhamento do desempenho. O front utiliza a [MatBloom API](../MatBloom-API/readme.MD) para autenticação, classificação de questões e acesso aos dados.
 
-## Estrutura do Projeto
+## Tecnologias
 
-```
-src/
-├── app/                    # App Router do Next.js
-│   ├── layout.tsx         # Layout principal
-│   ├── page.tsx           # Página inicial
-│   └── login/
-│       └── page.tsx       # Página de login
-├── components/            # Componentes reutilizáveis
-├── store/                # Redux store e slices
-├── services/             # Serviços de API
-├── hooks/                # Custom hooks
-├── constants/            # Constantes e interfaces
-├── assets/               # Imagens e recursos estáticos
-└── css/                  # Arquivos CSS
-```
+- Next.js 15 com App Router, React 18 e TypeScript
+- Tailwind CSS e componentes Radix UI
+- Redux Toolkit e Redux Persist
+- Axios para requisições à API
 
-## Principais Mudanças na Migração
+## Funcionalidades
 
-### 1. Estrutura de Roteamento
-- **Antes**: React Router DOM (`/src/App.tsx`)
-- **Agora**: Next.js App Router (`/src/app/`)
+- Login e navegação conforme o perfil do usuário.
+- Cadastro individual e importação de questões em JSON, com classificação de Bloom feita pela API. A lista permite pesquisa, filtros e correção manual do nível.
+- Cadastro e edição de turmas e alunos por diretores e administradores; gerenciamento de usuários e vínculo de professores às turmas conforme as permissões do perfil.
+- Montagem de provas com seleção manual, sorteio por conteúdo ou sugestões com base nos erros da turma ou do aluno; download de provas e gabaritos gerados pela API.
+- Correção de gabaritos a partir das páginas de turma e aluno, com prévia e possibilidade de editar as alternativas lidas antes de registrar. A aplicação pode ser configurada para contar ou não na média.
+- Análises por turma e aluno, incluindo dificuldades por conteúdo e por nível cognitivo.
 
-### 2. Configuração
-- **Antes**: `vite.config.ts`, `index.html`
-- **Agora**: `next.config.js`, `src/app/layout.tsx`
+## Execução local
 
-### 3. Navegação
-- **Antes**: `useNavigate()` do React Router
-- **Agora**: `useRouter()` do Next.js + `Link` component
-
-### 4. Providers
-- **Antes**: Providers no `main.tsx`
-- **Agora**: Providers no `src/store/Providers.tsx` + `'use client'`
-
-## Scripts Disponíveis
+Pré-requisitos: Node.js e npm. O Dockerfile do projeto utiliza Node.js 22. A API deve estar em execução e acessível pelo navegador.
 
 ```bash
-npm run dev      # Inicia o servidor de desenvolvimento
-npm run build    # Constrói o projeto para produção
-npm run start    # Inicia o servidor de produção
-npm run lint     # Executa o linter
+npm ci
 ```
 
-## Como Usar
+Configure a URL da API em `.env.local`, caso seja diferente do padrão:
 
-1. **Desenvolvimento**:
-   ```bash
-   npm run dev
-   ```
-   Acesse: http://localhost:3000
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8000
+```
 
-2. **Produção**:
-   ```bash
-   npm run build
-   npm run start
-   ```
+Inicie o servidor:
 
-## Páginas Disponíveis
+```bash
+npm run dev
+```
 
-- `/` - Página inicial
-- `/login` - Página de login
+Acesse <http://localhost:3000>. Por padrão, o front envia requisições para `http://localhost:8000`. A URL deve ser acessível **no navegador** de quem usa o sistema. A API precisa permitir a origem do front em `FRONTEND_ORIGINS` e a sessão usa cookie HTTP-only.
 
-## Componentes Migrados
+Para testar uma build de produção local:
 
-- ✅ Header (atualizado para usar Next.js Link)
-- ✅ Redux Store e Providers
-- ✅ Componentes UI existentes
-- ✅ Assets e imagens
+```bash
+npm run build
+npm run start
+```
 
-## Próximos Passos
+Para subir front, API e PostgreSQL com Docker, consulte o [README do projeto principal](../readme.MD). No Docker, `NEXT_PUBLIC_API_URL` é incorporada durante a build do Next.js; após alterá-la, reconstrua a imagem do front.
 
-1. Migrar as páginas que foram apagadas para a estrutura do Next.js
-2. Implementar autenticação real na página de login
-3. Adicionar mais rotas conforme necessário
-4. Configurar middleware de autenticação se necessário
+## Páginas principais
 
-## Tecnologias Utilizadas
+- `/login` — autenticação
+- `/dashboard` — visão geral
+- `/turmas` e `/turmas/[classroomId]` — turmas, análise e correção de gabaritos
+- `/gerenciarEstudantes` e `/alunos/[studentId]` — alunos e análise individual
+- `/gerenciarQuestoes` — cadastro, importação, pesquisa e filtros de questões
+- `/provas` — seleção de questões e criação de aplicações
+- `/gerenciarUsuarios` — usuários, conforme o perfil
 
-- Next.js 15
-- React 18
-- TypeScript
-- Tailwind CSS
-- Redux Toolkit
-- Redux Persist
-- Axios
+## Formato da importação de questões
+
+A tela aceita um objeto, uma lista de objetos ou um objeto com a chave `questions`. Exemplo para uma questão:
+
+```json
+{
+  "enunciation": "Quanto é 2 + 2?",
+  "itens": ["3", "4", "5"],
+  "correct_item": 1,
+  "contents": ["Adição"],
+  "dependencies": []
+}
+```
+
+`correct_item` é o índice da alternativa correta, começando em zero: A = 0, B = 1. Informe ao menos um conteúdo. O nível de Bloom é classificado pela API, mesmo que o arquivo contenha `level`. A importação envia as questões sequencialmente; se for interrompida, confira quantas foram adicionadas antes de tentar novamente.
+
+## Estrutura
+
+```text
+src/app/          Páginas e layouts do App Router
+src/components/   Componentes de interface e correção de gabaritos
+src/services/     Requisições à API
+src/store/        Estado Redux e providers
+src/hooks/        Hooks reutilizáveis
+src/constants/    Tipos e constantes
+src/assets/       Imagens e outros recursos
+```
+
+Para verificar os tipos TypeScript sem iniciar o servidor:
+
+```bash
+npx tsc --noEmit
+```
